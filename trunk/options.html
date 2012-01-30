@@ -1,0 +1,22 @@
+<html>
+
+<head>
+<script type="text/javascript" src="../jquery-1.7.1.min.js"></script>
+<script type="text/javascript" src="../const.js"></script>
+<script type="text/javascript">
+(function($){
+
+	$.get(TVSHOWS_URL,function(data){
+		$('a[href*=".htm"]',data).each(function(){
+			console.log($(this).attr('href'));			
+		});
+	});
+
+})(jQuery);
+</script>
+</head>
+
+<body>
+</body>
+
+</html>
