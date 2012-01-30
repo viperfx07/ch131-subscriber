@@ -1,0 +1,21 @@
+{
+	"name": "Ch131 Subscriber",
+	"description": "Get the latest episode of TV series from CH131.com",
+	"background_page": "background.html",
+	"icons": {
+	  "128": "icons/ytp-16.png",
+	  "16": "icons/ytp-16.png",
+	  "32": "icons/ytp-16.png",
+	  "48": "icons/ytp-16.png"
+	},
+   
+   "options_page": "options.html",
+   "browser_action": {
+      "default_icon": "icons/ytp-16.png",
+      "default_title": "Ch131 Subscriber",
+      "popup": "popup.html"
+   },
+   "permissions": [ "tabs", "http://*.ch131.com/*", "https://*.ch131.com/*", "contextMenus", "unlimitedStorage" ],
+   "update_url": "http://clients2.google.com/service/update2/crx",
+   "version": "0.0"
+}
