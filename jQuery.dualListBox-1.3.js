@@ -218,31 +218,17 @@
     }
 
     function MoveSelected(fromGroup, toGroup) {
+		console.log(fromGroup.view,toGroup.view);
+		var s="";
         if (IsMoveMode(settings[fromGroup.index])) {
-            $('#' + fromGroup.view + ' option:selected').appendTo('#' + toGroup.view);
-        } else {
-			var added_to_subscribed = {name: $('#' + fromGroup.view + ' option:selected:not([class*=copiedOption])').text(), url: $('#' + fromGroup.view + ' option:selected:not([class*=copiedOption])').attr('value')};
-			var ls_subs = [];
-			
-			//check if localStorage has a value in it
-			try{ 
-				s =JSON.parse(localStorage["subscribeds"])[0];
+			$('#' + fromGroup.view + ' option:selected').appendTo('#' + toGroup.view);
+		} else {
+			var added_to_subscribed =$('#' + fromGroup.view + ' option:selected').attr('value');
+			s = (typeof localStorage["subscribeds"] !== "undefined") ? localStorage["subscribeds"] : "";
+			if($.inArray(added_to_subscribed,s.split(","))<0){
+				localStorage["subscribeds"] = (s==="") ? added_to_subscribed : (s + "," + added_to_subscribed);
+				$('#' + fromGroup.view + ' option:selected:not([class*=copiedOption])').clone().appendTo('#' + toGroup.view).end().end().addClass('copiedOption');
 			}
-			catch(ex){ //if not
-				s="";
-			}
-			
-			if(s==="")
-				ls_subs.push(added_to_subscribed);
-			else
-			{
-				console.log(s);
-			
-				ls_subs.push(s.toString(),added_to_subscribed);
-			}		
-			localStorage["subscribeds"] = JSON.stringify(ls_subs);
-			
-			$('#' + fromGroup.view + ' option:selected:not([class*=copiedOption])').clone().appendTo('#' + toGroup.view).end().end().addClass('copiedOption');
         }
 		
 		     
@@ -276,23 +262,37 @@
     }
 
     function RemoveSelected(removeGroup, otherGroup) {
+		console.log(removeGroup.view,otherGroup.view);
+		if(typeof $('#' + removeGroup.view + ' option:selected').attr('class') !== "undefined")
+				var removeItem = $('#' + removeGroup.view + ' option:selected').attr('class').substring(2);
+		console.log(removeItem);
+		var parsed_s = (localStorage["subscribeds"]).split(",");
+		parsed_s = jQuery.grep(parsed_s, function(value) {
+			return value != removeItem;
+		});
+		localStorage["subscribeds"] = parsed_s.join(",");
+		
+		
         $('#' + otherGroup.view + ' option.copiedOption').add('#' + otherGroup.storage + ' option.copiedOption').remove();
-        console.log(removeGroup.view + " " + otherGroup.view);
+        
+		
 		try {
-            $('#' + removeGroup.view + ' option:selected').appendTo('#' + otherGroup.view).removeAttr('selected');
+			$('#' + removeGroup.view + ' option:selected').appendTo('#' + otherGroup.view).removeAttr('selected');
         }
         catch (ex) {
             //swallow the error for IE6
         }
-        $('#' + removeGroup.view + ' option').add('#' + removeGroup.storage + ' option').clone().addClass('copiedOption').appendTo('#' + otherGroup.view);
+        //$('#' + removeGroup.view + ' option').add('#' + removeGroup.storage + ' option').clone().addClass('copiedOption').appendTo('#' + otherGroup.view);
         Filter(otherGroup);
         if (settings[removeGroup.index].useCounters) { UpdateLabel(removeGroup); }
     }
 
     function RemoveAll(removeGroup, otherGroup) {
         $('#' + otherGroup.view + ' option.copiedOption').add('#' + otherGroup.storage + ' option.copiedOption').remove();
+		
         try {
             $('#' + removeGroup.storage + ' option').clone().addClass('copiedOption').add('#' + removeGroup.view + ' option').appendTo('#' + otherGroup.view).removeAttr('selected');
+			localStorage["subscribeds"]="";
         }
         catch (ex) {
             //swallow the error for IE6

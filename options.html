@@ -1,7 +1,7 @@
 <html>
 <head>
 <title>Option</title>
-<link href="../styles.css" type="text/css" rel="Stylesheet" />
+<link href="../styles.css" type="text/css" rel="stylesheet" />
 <script type="text/javascript" src="../jquery-1.7.1.min.js"></script>.
 <script type="text/javascript" src="../jquery.dualListBox-1.3.js"></script>
 <script type="text/javascript" src="../const.js"></script>
@@ -11,10 +11,7 @@
 	var tv_series = [];
 	var test_url;
 	var new_url;
-	
-	
-	
-	
+	var s="";
 	
 	$.get(TVSHOWS_URL,function(data){
 		$('a[href*=".htm"]',data).each(function(){
@@ -26,9 +23,15 @@
 		});
 		
 		$.configureBoxes({transferMode: 'copy'});
-		
-		
-		
+			
+		if(typeof localStorage["subscribeds"] !== "undefined" && localStorage["subscribeds"] !== ""){
+			s =localStorage["subscribeds"]
+			var parsed_s = $.unique(s.split(","));
+			$.each(parsed_s,function(i){
+				$('option[value="' + parsed_s[i] + '"]').clone().appendTo('#box2View').end().end();
+				$('option[value="' + parsed_s[i] + '"]').addClass('copiedOption');
+			})
+		}
 		
 		/*
 		$("#combobox").change(function(){
@@ -64,8 +67,25 @@
 			});
 		});
 		*/
-		
+		$("#getLatestEp").click(function(){
+			console.log("y");
+			$('#box2View option').each(function(){
+				var series_name = $(this).text();
+				$.get($(this).attr('value'),function(data){
+					var url = BASE_URL + $('a[href*=".htm"]',data).last().attr('href');
+					console.log(url);
+					$.get(url,function(data2){
+						console.log('v');
+						console.log($('a[href*=".htm"]',data2).last().text());
+						
+					});
+					
+				});
+			});
+		});
 	});
+	
+	
 	
 	
 		
@@ -74,7 +94,7 @@
 </head>
 
 <body>
-
+<button id="getLatestEp">Get Latest Ep</button>
 <table>
 	<tr>
 		<td>
@@ -86,7 +106,6 @@
 
         <td>
 			<button id="to2" type="button">&nbsp;>&nbsp;</button>
-			<button id="allTo2" type="button">&nbsp;>>&nbsp;</button>
 			<button id="allTo1" type="button">&nbsp;<<&nbsp;</button>
 			<button id="to1" type="button">&nbsp;<&nbsp;</button>
 		</td>
@@ -94,11 +113,12 @@
 		<td>
 			Filter: <input type="text" id="box2Filter" /><button type="button" id="box2Clear">X</button><br />
 			<select id="box2View" multiple="multiple" style="height:500px;width:300px;"></select><br/>
-			<span id="box2Counter" class="countLabel"></span>
 			<select id="box2Storage"></select>
 		</td>
 	</tr>
 </table>
+
+
 </body>
 
 </html>
